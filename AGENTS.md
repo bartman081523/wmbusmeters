@@ -392,3 +392,50 @@ To reproduce CI locally: `./configure && make && make test` plus `cd drivers && 
 - `jq` — required by `test.sh`
 - `librtlsdr`, `libusb`, `libxml2`, `libxslt` — required by `./configure`
 - C++17 compiler (g++ or clang++)
+
+## Specifications & references
+
+wmbusmeters implements the EN 13757 / OMS wM-Bus and M-Bus standards. The
+standards are not vendored; obtain them externally. Behaviour must be backed by
+the standard, not invented — see `docs/agents/research.md`.
+
+- **EN 13757-3** (CEN, paid) — Application layer: DIF/VIF data records, data
+  types, compact profiles. The core for decoding; cited throughout
+  `src/dvparser.cc` and `src/wmbus.cc`.
+- **EN 13757-4** (CEN, paid) — Wireless M-Bus lower layers: modes T/C/N/S/F/R2,
+  frame formats A/B, CRC, extended link layer.
+- **EN 13757-7** (CEN, paid) — Transport & security: TPL/AFL, security modes
+  (AES-128 modes 5/7; DES modes 2/3). Cited in `src/wmbus.cc`, `src/crypto/des.h`.
+- **EN 13757-2 / -6** (CEN, paid) — wired M-Bus physical + link layer (the
+  applicable part varies by edition).
+- **OMS** (Open Metering Systems) — the freely available specification derived
+  from EN 13757; a practical entry point: https://oms-group.org/
+- **libmbus** — `rscada/libmbus` (BSD-3-Clause, https://github.com/rscada/libmbus):
+  a good open-source M-Bus implementation to compare against. wmbusmeters
+  implements *more* of the standard than libmbus (notably the wireless parts —
+  compact frames with hash signatures, the ELL header), so libmbus is a
+  **comparison, not a reference**. Not vendored here.
+- **Project wiki** — https://wmbusmeters.github.io/wmbusmeters-wiki/
+- **Project site** (paste a hex telegram to verify decryption) — https://wmbusmeters.org/
+
+When implementing spec-defined behaviour, cite the clause in a one-line code
+comment using the house style already in `src/dvparser.cc`
+(e.g. `// EN 13757-3:2018 Annex F.8: …`).
+
+## Methodology
+
+Longer-form working guidance lives in `docs/agents/`:
+
+- `docs/agents/research.md` — how to investigate M-Bus behaviour/specs before
+  implementing (sources of truth, evidence-first, citing the spec, controlled
+  units, flagging unknowns).
+- `docs/agents/devmind.md` — a language-agnostic engineering mindset
+  (readability, test-first, surgical changes, respecting the architecture,
+  evidence before opinion).
+
+## Reporting issues / device support
+
+Bug reports, enhancements and device-support requests use the templates in
+`.github/ISSUE_TEMPLATE/` — pick the matching one (e.g. `driver-request.yml` for
+new or improved meter support, `wmbusmeters-request.yml` for the rest) and fill
+in its required fields.
