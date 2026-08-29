@@ -292,22 +292,25 @@ string CommandHandler::handleListDrivers()
 
     for (DriverInfo *di : allDrivers())
     {
-        xmqAddKeyValue(rsp, drivers, "name", di->name().str().c_str(), NS_PARENT);
-        xmqAddKeyValue(rsp, drivers, "type", toString(di->type()), NS_PARENT);
+        rn = xmqAddElement(rsp, drivers, "_", NS_PARENT);
+        assert(rn.status == XMQ_OK);
+        XMQNode *driver = rn.node;
+        xmqAddKeyValue(rsp, driver, "name", di->name().str().c_str(), NS_PARENT);
+        xmqAddKeyValue(rsp, driver, "type", toString(di->type()), NS_PARENT);
 
-        /*
-        vector<DriverName> &aliases = di->nameAliases();
-        if (!aliases.empty())
+        vector<DriverName> &aliases_list = di->nameAliases();
+
+        if (!aliases_list.empty())
         {
-            json += ", \"aliases\": [";
-            for (size_t i = 0; i < aliases.size(); ++i)
+            rn = xmqAddElementWithAttrs(rsp, driver, "aliases", NS_PARENT, XMQ_ATTRS({"A",""}));
+            assert(rn.status == XMQ_OK);
+            XMQNode *aliases = rn.node;
+
+            for (size_t i = 0; i < aliases_list.size(); ++i)
             {
-                if (i > 0) json += ", ";
-                json += "\"" + escapeJsonString(aliases[i].str()) + "\"";
+                xmqAddKeyValue(rsp, aliases, "_", aliases_list[i].str().c_str(), NS_PARENT);
             }
-            json += "]";
         }
-        */
     }
 
     return docToString(rsp, XMQ_CONTENT_JSON, false);

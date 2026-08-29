@@ -36,6 +36,7 @@ std::string docToString(XMQDoc *doc, XMQContentType format, bool pretty_print)
 
     xmqFreeOutputSettings(os);
 
+    stop--; // Drop the final NULL.
     std::string s = std::string(start, stop);
 
     free(start);
