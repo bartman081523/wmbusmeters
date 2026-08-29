@@ -96,7 +96,7 @@ struct Configuration
     bool use_logfile {};
     bool use_stderr_for_log = true; // Default is to use stderr for logging.
     bool ignore_duplicate_telegrams = true; // Default is to ignore duplicates.
-    bool detailed_first = false; // Print additional lines in telegram mapping back to driver field.
+    TelegramDetails telegram_details = TelegramDetails::NEVER;
     std::string logfile;
     XMQContentType output_format {};
     bool pretty_print_output {};

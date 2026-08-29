@@ -362,18 +362,22 @@ void handleIgnoreDuplicateTelegrams(Configuration *c, string value)
     }
 }
 
-void handleDetailedFirst(Configuration *c, string value)
+void handleTelegramDetails(Configuration *c, string value)
 {
-    if (value == "true")
+    if (value == "never")
     {
-        c->detailed_first = true;
+        c->telegram_details = TelegramDetails::NEVER;
     }
-    else if (value == "false")
+    else if (value == "first")
     {
-        c->detailed_first = false;
+        c->telegram_details = TelegramDetails::FIRST;
+    }
+    else if (value == "always")
+    {
+        c->telegram_details = TelegramDetails::ALWAYS;
     }
     else {
-        warning("detailedfirst should be either true or false, not \"%s\"\n", value.c_str());
+        warning("telegramdetails should be either never,first or always, not \"%s\"\n", value.c_str());
     }
 }
 
@@ -807,7 +811,7 @@ shared_ptr<Configuration> loadConfiguration(string root, ConfigOverrides overrid
         else if (p.first == "nonet") handleNoNet(c, p.second);
         else if (p.first == "basicauth") handleBasicAuth(c, p.second);
         else if (p.first == "ignoreduplicates") handleIgnoreDuplicateTelegrams(c, p.second);
-        else if (p.first == "detailedfirst") handleDetailedFirst(c, p.second);
+        else if (p.first == "telegramdetails") handleTelegramDetails(c, p.second);
         else if (p.first == "device") handleDeviceOrHex(c, p.second);
         else if (p.first == "donotprobe") handleDoNotProbe(c, p.second);
         else if (p.first == "listento") handleListenTo(c, p.second);

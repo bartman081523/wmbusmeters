@@ -1538,7 +1538,17 @@ void MeterCommonImplementation::buildOutputDoc(XMQDoc *doc,
     xmqAddKeyValueWithAttrs(doc, telegram, "id", id.c_str(), NS_PARENT,
                             XMQ_ATTRS( {"S", "" }) ); // S means id will be a string in json, even though
                                                       // it looks like a number.
+    XMQNode *details = NULL;
 
+    if (getTelegramDetails() == TelegramDetails::ALWAYS ||
+        (first && getTelegramDetails() == TelegramDetails::FIRST))
+    {
+        rn = xmqAddElement(doc, telegram, "details", NS_PARENT);
+        details = rn.node;
+
+        string hex = bin2hex(t->frame);
+        xmqAddKeyValue(doc, details, "telegram", hex.c_str(), NS_PARENT);
+    }
 
     // Iterate over the meter field infos...
     map<FieldInfo*,set<DVEntry*>> founds; // Multiple dventries can match to a single field info.
@@ -1550,21 +1560,7 @@ void MeterCommonImplementation::buildOutputDoc(XMQDoc *doc,
         NumericField& nf = p.second;
         if (nf.field_info->printProperties().hasHIDE()) continue;
 
-        bool add_details = true; //first && getDetailedFirst();
-
-        nf.field_info->insertNumericValuesIntoDoc(this, &nf.dv_entry, doc, telegram, add_details);
-
-/*
-        if (first && getDetailedFirst())
-        {
-            size_t pos = out.find("\":");
-            if (pos != string::npos)
-            {
-                string rule = out.substr(0, pos)+"_field\":"+to_string(nf.field_info->index());
-                s += indent+rule+","+newline;
-            }
-        }
-*/
+        nf.field_info->insertNumericValuesIntoDoc(this, &nf.dv_entry, doc, telegram, details);
     }
 
     for (auto &p : string_values_)
@@ -2441,7 +2437,7 @@ string FieldInfo::renderJson(Meter *m, DVEntry *dve)
     return s;
 }
 
-void FieldInfo::insertNumericValuesIntoDoc(Meter *m, DVEntry *dve, XMQDoc *doc, XMQNode *telegram, bool add_details)
+void FieldInfo::insertNumericValuesIntoDoc(Meter *m, DVEntry *dve, XMQDoc *doc, XMQNode *telegram, XMQNode *details)
 {
     string display_unit_s = unitToStringLowerCase(displayUnit());
     string field_name = generateFieldNameNoUnit(m, dve);
@@ -2493,6 +2489,18 @@ void FieldInfo::insertNumericValuesIntoDoc(Meter *m, DVEntry *dve, XMQDoc *doc, 
             val = valueToString(m->getNumericValue(field_name, displayUnit()), displayUnit());
         }
         xmqAddKeyValue(doc, telegram, key.c_str(), val.c_str(), NS_PARENT);
+        if (details)
+        {
+            auto rn = xmqAddElement(doc, details, key.c_str(), NS_PARENT);
+            XMQNode *info = rn.node;
+            xmqAddKeyValue(doc, info, "quantity", toString(xuantity()), NS_PARENT);
+            xmqAddKeyValue(doc, info, "unit", display_unit_s.c_str(), NS_PARENT);
+            assert(dve);
+            string o = to_string(dve->offset);
+            xmqAddKeyValue(doc, info, "offset", o.c_str(), NS_PARENT);
+            xmqAddKeyValueWithAttrs(doc, info, "difvif", dve->dif_vif_key.str().c_str(), NS_PARENT, XMQ_ATTRS({"S",""}));
+            xmqAddKeyValueWithAttrs(doc, info, "val", dve->value.c_str(), NS_PARENT, XMQ_ATTRS({"S",""}));
+        }
     }
 }
 

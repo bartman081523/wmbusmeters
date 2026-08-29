@@ -1859,7 +1859,7 @@ bool Telegram::parse_TPL_78(vector<uchar>::iterator &pos)
 bool Telegram::parse_TPL_79(vector<uchar>::iterator &pos)
 {
     MVT mvt = {(uint16_t)dll_mfct, dll_version, dll_type};
-    
+
     bool ok = false;
 
     CHECK(2);
@@ -4312,16 +4312,16 @@ void setIgnoreDuplicateTelegrams(bool idt)
     ignore_duplicate_telegrams_ = idt;
 }
 
-static bool detailed_first_ = false;
+static TelegramDetails telegram_details_ = TelegramDetails::NEVER;
 
-void setDetailedFirst(bool df)
+void setTelegramDetails(TelegramDetails td)
 {
-    detailed_first_ = df;
+    telegram_details_ = td;
 }
 
-bool getDetailedFirst()
+TelegramDetails getTelegramDetails()
 {
-    return detailed_first_;
+    return telegram_details_;
 }
 
 bool BusDeviceCommonImplementation::handleTelegram(AboutTelegram &about, vector<uchar> frame)

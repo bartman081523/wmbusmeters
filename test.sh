@@ -59,8 +59,8 @@ if [ "$?" != "0" ]; then RC="1"; fi
 ./tests/test_list_envs.sh $PROG
 if [ "$?" != "0" ]; then RC="1"; fi
 
-#./tests/test_detailed_first.sh $PROG
-#if [ "$?" != "0" ]; then RC="1"; fi
+./tests/test_detailed_first.sh $PROG
+if [ "$?" != "0" ]; then RC="1"; fi
 
 tests/test_config_xmq_mvt_override.sh $PROG
 if [ "$?" != "0" ]; then RC="1"; fi

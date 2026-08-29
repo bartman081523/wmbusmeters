@@ -534,13 +534,23 @@ static shared_ptr<Configuration> parseNormalCommandLine(Configuration *c, int ar
             i++;
             continue;
         }
-        if (!strncmp(argv[i], "--usestdoutforlogging", 13)) {
+        if (!strcmp(argv[i], "--usestdoutforlogging")) {
             c->use_stderr_for_log = false;
             i++;
             continue;
         }
-        if (!strcmp(argv[i], "--detailedfirst")) {
-            c->detailed_first = true;
+        if (!strncmp(argv[i], "--telegramdetails=", 18)) {
+            if (!strcmp(argv[i]+18, "never")) {
+                c->telegram_details = TelegramDetails::NEVER;
+            }
+            else if (!strcmp(argv[i]+18, "first")) {
+                c->telegram_details = TelegramDetails::FIRST;
+            }
+            else if (!strcmp(argv[i]+18, "always")) {
+                c->telegram_details = TelegramDetails::ALWAYS;
+            } else {
+                error(EXIT_USAGE_ERROR, "No such telegramdetails %s\n", argv[i]+18);
+            }
             i++;
             continue;
         }
