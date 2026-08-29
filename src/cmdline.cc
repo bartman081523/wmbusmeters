@@ -329,9 +329,17 @@ static shared_ptr<Configuration> parseNormalCommandLine(Configuration *c, int ar
             i++;
             continue;
         }
-        if (!strcmp(argv[i], "--ppjson"))
+        if (!strcmp(argv[i], "--ppjson") ||
+            !strcmp(argv[i], "-p"))
         {
-            c->pretty_print_json = true;
+            c->pretty_print_output = true;
+            i++;
+            continue;
+        }
+        if (!strcmp(argv[i], "--colorize") ||
+            !strcmp(argv[i], "-c"))
+        {
+            c->colorize_output = true;
             i++;
             continue;
         }
@@ -339,20 +347,29 @@ static shared_ptr<Configuration> parseNormalCommandLine(Configuration *c, int ar
         {
             if (!strcmp(argv[i]+9, "json"))
             {
-                c->json = true;
+                c->output_format = XMQ_CONTENT_JSON;
                 c->fields = false;
             }
-            else
-            if (!strcmp(argv[i]+9, "fields"))
+            else if (!strcmp(argv[i]+9, "xml"))
             {
-                c->json = false;
+                c->output_format = XMQ_CONTENT_XML;
+                c->fields = false;
+            }
+            else if (!strcmp(argv[i]+9, "xmq"))
+            {
+                c->output_format = XMQ_CONTENT_XMQ;
+                c->fields = false;
+            }
+            else if (!strcmp(argv[i]+9, "fields"))
+            {
+                c->output_format = XMQ_CONTENT_UNKNOWN;
                 c->fields = true;
                 c->separator = ';';
             }
             else
             if (!strcmp(argv[i]+9, "hr"))
             {
-                c->json = false;
+                c->output_format = XMQ_CONTENT_UNKNOWN;
                 c->fields = false;
                 c->separator = '\t';
             }

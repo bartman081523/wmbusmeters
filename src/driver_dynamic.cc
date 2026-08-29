@@ -49,7 +49,7 @@ Quantity check_field_quantity(const char *quantity_s, DriverDynamic *dd);
 VifScaling check_vif_scaling(const char *vif_scaling_s, DriverDynamic *dd);
 DifSignedness check_dif_signedness(const char *dif_signedness_s, DriverDynamic *dd);
 PrintProperties check_print_properties(const char *print_properties_s, DriverDynamic *dd);
-string get_translation(XMQDoc *doc, XMQNodePtr node, string name, string lang);
+string get_translation(XMQDoc *doc, XMQNode *node, string name, string lang);
 string check_calculate(const char *formula, DriverDynamic *dd);
 Unit check_display_unit(const char *display_unit, DriverDynamic *dd);
 double check_force_scale(const char *force_scale, DriverDynamic *dd);
@@ -201,7 +201,7 @@ DriverDynamic::~DriverDynamic()
 {
 }
 
-XMQProceed DriverDynamic::add_detect(XMQDoc *doc, XMQNodePtr detect, DriverInfo *di)
+XMQProceed DriverDynamic::add_detect(XMQDoc *doc, XMQNode *detect, DriverInfo *di)
 {
     string mvt = xmqGetStringRel(doc, ".", detect);
 
@@ -301,7 +301,7 @@ XMQProceed DriverDynamic::add_detect(XMQDoc *doc, XMQNodePtr detect, DriverInfo 
     return XMQ_CONTINUE;
 }
 
-XMQProceed DriverDynamic::add_compact_frame_format(XMQDoc *doc, XMQNodePtr node, DriverInfo *di)
+XMQProceed DriverDynamic::add_compact_frame_format(XMQDoc *doc, XMQNode *node, DriverInfo *di)
 {
     const char *difvif_s = xmqGetStringRel(doc, ".", node);
 
@@ -321,7 +321,7 @@ XMQProceed DriverDynamic::add_compact_frame_format(XMQDoc *doc, XMQNodePtr node,
     return XMQ_CONTINUE;
 }
 
-XMQProceed DriverDynamic::add_use(XMQDoc *doc, XMQNodePtr field, DriverDynamic *dd)
+XMQProceed DriverDynamic::add_use(XMQDoc *doc, XMQNode *field, DriverDynamic *dd)
 {
     string name = xmqGetStringRel(doc, ".", field);
     bool ok = dd->addOptionalLibraryFields(name);
@@ -335,7 +335,7 @@ XMQProceed DriverDynamic::add_use(XMQDoc *doc, XMQNodePtr field, DriverDynamic *
     return XMQ_CONTINUE;
 }
 
-XMQProceed DriverDynamic::add_field(XMQDoc *doc, XMQNodePtr field, DriverDynamic *dd)
+XMQProceed DriverDynamic::add_field(XMQDoc *doc, XMQNode *field, DriverDynamic *dd)
 {
     // The field name must be supplied without a unit ie total (not total_m3) since units are managed by wmbusmeters.
     string name = check_field_name(xmqGetStringRel(doc, "name", field), dd);
@@ -576,7 +576,7 @@ XMQProceed DriverDynamic::add_field(XMQDoc *doc, XMQNodePtr field, DriverDynamic
     return XMQ_CONTINUE;
 }
 
-XMQProceed DriverDynamic::add_match(XMQDoc *doc, XMQNodePtr match, DriverDynamic *dd)
+XMQProceed DriverDynamic::add_match(XMQDoc *doc, XMQNode *match, DriverDynamic *dd)
 {
     FieldMatcher *fm = dd->tmp_matcher_;
 
@@ -597,7 +597,7 @@ XMQProceed DriverDynamic::add_match(XMQDoc *doc, XMQNodePtr match, DriverDynamic
     return XMQ_CONTINUE;
 }
 
-XMQProceed DriverDynamic::add_combinable(XMQDoc *doc, XMQNodePtr match, DriverDynamic *dd)
+XMQProceed DriverDynamic::add_combinable(XMQDoc *doc, XMQNode *match, DriverDynamic *dd)
 {
     FieldMatcher *fm = dd->tmp_matcher_;
 
@@ -606,7 +606,7 @@ XMQProceed DriverDynamic::add_combinable(XMQDoc *doc, XMQNodePtr match, DriverDy
     return XMQ_CONTINUE;
 }
 
-XMQProceed DriverDynamic::add_combinable_raw(XMQDoc *doc, XMQNodePtr match, DriverDynamic *dd)
+XMQProceed DriverDynamic::add_combinable_raw(XMQDoc *doc, XMQNode *match, DriverDynamic *dd)
 {
     FieldMatcher *fm = dd->tmp_matcher_;
 
@@ -626,7 +626,7 @@ XMQProceed DriverDynamic::add_combinable_raw(XMQDoc *doc, XMQNodePtr match, Driv
        test  = set
    }
 */
-XMQProceed DriverDynamic::add_map(XMQDoc *doc, XMQNodePtr map, DriverDynamic *dd)
+XMQProceed DriverDynamic::add_map(XMQDoc *doc, XMQNode *map, DriverDynamic *dd)
 {
     const char *name = xmqGetStringRel(doc, "name", map);
     uint64_t value = 0;
@@ -661,7 +661,7 @@ XMQProceed DriverDynamic::add_map(XMQDoc *doc, XMQNodePtr map, DriverDynamic *dd
         map { } map {}
     }
 */
-XMQProceed DriverDynamic::add_lookup(XMQDoc *doc, XMQNodePtr lookup, DriverDynamic *dd)
+XMQProceed DriverDynamic::add_lookup(XMQDoc *doc, XMQNode *lookup, DriverDynamic *dd)
 {
     const char *name = xmqGetStringRel(doc, "name", lookup);
     Translate::MapType map_type = checked_map_type(xmqGetStringRel(doc, "map_type", lookup), dd);
@@ -683,7 +683,7 @@ XMQProceed DriverDynamic::add_lookup(XMQDoc *doc, XMQNodePtr lookup, DriverDynam
     return XMQ_CONTINUE;
 }
 
-XMQProceed DriverDynamic::add_mfct_tpl_status_map(XMQDoc *doc, XMQNodePtr map, Translate::Rule *rule)
+XMQProceed DriverDynamic::add_mfct_tpl_status_map(XMQDoc *doc, XMQNode *map, Translate::Rule *rule)
 {
     const char *name = xmqGetStringRel(doc, "name", map);
     const char *value_s = xmqGetStringRel(doc, "value", map);
@@ -699,7 +699,7 @@ XMQProceed DriverDynamic::add_mfct_tpl_status_map(XMQDoc *doc, XMQNodePtr map, T
     return XMQ_CONTINUE;
 }
 
-XMQProceed DriverDynamic::add_mfct_tpl_status(XMQDoc *doc, XMQNodePtr node, DriverInfo *di)
+XMQProceed DriverDynamic::add_mfct_tpl_status(XMQDoc *doc, XMQNode *node, DriverInfo *di)
 {
     const char *mask_bits_s = xmqGetStringRel(doc, "mask_bits", node);
     const char *default_message = xmqGetStringRel(doc, "default_message", node);
@@ -720,7 +720,7 @@ XMQProceed DriverDynamic::add_mfct_tpl_status(XMQDoc *doc, XMQNodePtr node, Driv
     return XMQ_CONTINUE;
 }
 
-XMQProceed DriverDynamic::add_default_key(XMQDoc *doc, XMQNodePtr node, DriverInfo *di)
+XMQProceed DriverDynamic::add_default_key(XMQDoc *doc, XMQNode *node, DriverInfo *di)
 {
     const char *key_s = xmqGetStringRel(doc, ".", node);
     if (!key_s) return XMQ_CONTINUE;
@@ -1085,7 +1085,7 @@ PrintProperties check_print_properties(const char *print_properties_s, DriverDyn
     return print_properties;
 }
 
-string get_translation(XMQDoc *doc, XMQNodePtr node, string name, string lang)
+string get_translation(XMQDoc *doc, XMQNode *node, string name, string lang)
 {
     string xpath = name+"/"+lang;
     const char *txt = xmqGetStringRel(doc, xpath.c_str(), node);

@@ -23,6 +23,7 @@
 #include"drivers.h"
 #include"xmq.h"
 #include"util.h"
+#include"utils/doc.h"
 
 #include<pthread.h>
 #include<semaphore.h>
@@ -376,7 +377,12 @@ void WMBusXmqTTY::processLine(const string &line)
     // Generate output
     string hr, fields, json;
     vector<string> envs, more_json, selected_fields;
-    meter->printMeter(&out_telegram, &hr, &fields, '\t', &json, &envs, &more_json, &selected_fields, false);
+
+    rd = xmqNewDoc();
+    assert(rd.status == XMQ_OK);
+    doc = rd.doc;
+
+    meter->printMeter(&out_telegram, &hr, &fields, '\t', &envs, &more_json, &selected_fields, doc);
 
     // Check parse quality - how much of the content was understood (in bytes)
     int content_bytes = 0, understood_bytes = 0;
@@ -414,6 +420,9 @@ void WMBusXmqTTY::processLine(const string &line)
             json += ", \"telegram\": \"" + telegram_hex + "\"}";
         }
     }
+
+    json = docToString(doc, XMQ_CONTENT_JSON, false);
+    xmqFreeDoc(doc);
 
     outputResult(json);
 }

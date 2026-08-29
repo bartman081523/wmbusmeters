@@ -23,6 +23,7 @@
 #include"serial.h"
 #include"meters.h"
 #include"drivers.h"
+#include"utils/doc.h"
 #include"xmq.h"
 
 #include<pthread.h>
@@ -224,7 +225,7 @@ void WMBusSocket::processLine(const string &line)
 
     // Dispatch based on command type.
     // XMQ maps JSON {"_": "CMD", ...} so that CMD becomes the root element name.
-    XMQNodePtr root = xmqGetRootNode(doc);
+    XMQNode *root = xmqGetRootNode(doc);
     const char *cmd = root ? xmqGetName(root) : NULL;
 
     if (cmd && !strcmp(cmd, "decode"))
@@ -244,32 +245,32 @@ void WMBusSocket::processLine(const string &line)
     sendError("unknown command, expected 'decode' or 'list_drivers'", "");
 }
 
-void WMBusSocket::handleDecode(XMQDoc *doc, const string &line)
+void WMBusSocket::handleDecode(XMQDoc *req, const string &line)
 {
     string telegram_hex, key_hex, driver_name, format_str;
 
-    const char *telegram_hex_s = xmqGetString(doc, "/decode/telegram");
+    const char *telegram_hex_s = xmqGetString(req, "/decode/telegram");
     if (!telegram_hex_s)
     {
         sendError("missing 'telegram' field in JSON input", "");
-        xmqFreeDoc(doc);
+        xmqFreeDoc(req);
         return;
     }
     telegram_hex = telegram_hex_s;
 
-    const char *key_hex_s = xmqGetString(doc, "/decode/key");
+    const char *key_hex_s = xmqGetString(req, "/decode/key");
     if (key_hex_s == NULL || !strcmp(key_hex_s, "NOKEY")) key_hex = "";
     else key_hex = key_hex_s;
 
-    const char *driver_name_s = xmqGetString(doc, "/decode/driver");
+    const char *driver_name_s = xmqGetString(req, "/decode/driver");
     if (driver_name_s == NULL) driver_name = "auto";
     else driver_name = driver_name_s;
 
-    const char *format_s = xmqGetString(doc, "/decode/format");
+    const char *format_s = xmqGetString(req, "/decode/format");
     if (format_s == NULL) format_str = "";
     else format_str = format_s;
 
-    xmqFreeDoc(doc);
+    xmqFreeDoc(req);
 
     // Convert hex to binary
     vector<uchar> input_frame;
@@ -400,9 +401,16 @@ void WMBusSocket::handleDecode(XMQDoc *doc, const string &line)
     Telegram out_telegram;
     bool handled = meter->handleTelegram(about, input_frame, false, &addresses, &match, &out_telegram);
 
-    string hr, fields, json;
+    string hr, fields;
     vector<string> envs, more_json, selected_fields;
-    meter->printMeter(&out_telegram, &hr, &fields, '\t', &json, &envs, &more_json, &selected_fields, false);
+
+    auto rd = xmqNewDoc();
+    assert(rd.status == XMQ_OK);
+    XMQDoc *doc = rd.doc;
+
+    meter->printMeter(&out_telegram, &hr, &fields, '\t', &envs, &more_json, &selected_fields, doc);
+
+    string json = docToString(doc, XMQ_CONTENT_JSON, false);
 
     int content_bytes = 0, understood_bytes = 0;
     out_telegram.analyzeParse(OutputFormat::NONE, &content_bytes, &understood_bytes);

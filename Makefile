@@ -187,6 +187,7 @@ PROG_OBJS:=\
 	$(BUILD)/cmdline.o \
 	$(BUILD)/config.o \
 	$(BUILD)/crc16.o \
+	$(BUILD)/doc.o \
 	$(BUILD)/download.o \
 	$(BUILD)/drivers.o \
 	$(BUILD)/dvparser.o \

@@ -659,6 +659,21 @@ string makeQuotedJson(const string& s)
     return string("\"")+key+"\":\""+value+"\"";
 }
 
+void extractKeyValue(const std::string &s, std::string *key, std::string *val)
+{
+    size_t p = s.find('=');
+    if (p != string::npos)
+    {
+        *key = s.substr(0,p);
+        *val = s.substr(p+1);
+    }
+    else
+    {
+        *key = s;
+        *val = "";
+    }
+}
+
 string currentYear()
 {
     char datetime[40];

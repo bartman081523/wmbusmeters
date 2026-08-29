@@ -338,6 +338,7 @@ struct FieldInfo
     std::string renderJsonOnlyDefaultUnit(Meter *m);
     std::string renderJson(Meter *m, DVEntry *dve);
     std::string renderJsonText(Meter *m, DVEntry *dve);
+    void insertNumericValuesIntoDoc(Meter *m, DVEntry *dve, XMQDoc *doc, XMQNode *telegram, bool add_details);
     // Render the field name based on the actual field from the telegram.
     // A FieldInfo can be declared to handle any number of storage fields of a certain range.
     // The vname is then a pattern total_at_month_{storage_counter} that gets translated into
@@ -485,12 +486,12 @@ struct Meter
                                 std::vector<std::string> *more_json) = 0;
     virtual void printMeter(Telegram *t,
                             std::string *human_readable,
-                            std::string *fields, char separator,
-                            std::string *json,
+                            std::string *fields,
+                            char separator,
                             std::vector<std::string> *envs,
                             std::vector<std::string> *more_json,
                             std::vector<std::string> *selected_fields,
-                            bool pretty_print_json) = 0;
+                            XMQDoc *doc) = 0;
 
     // The handleTelegram expects an input_frame where the DLL crcs have been removed.
     // Returns true of this meter handled this telegram!

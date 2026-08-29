@@ -636,21 +636,31 @@ void handleLogfile(Configuration *c, string logfile)
 
 void handleFormat(Configuration *c, string format)
 {
+    c->output_format = XMQ_CONTENT_UNKNOWN;
+    c->fields = false;
     if (format == "hr")
     {
-        c->json = false;
-        c->fields = false;
-    } else if (format == "json")
+        c->separator = '\t';
+    }
+    else if (format == "json")
     {
-        c->json = true;
-        c->fields = false;
+        c->output_format = XMQ_CONTENT_JSON;
+    }
+    else if (format == "xml")
+    {
+        c->output_format = XMQ_CONTENT_XML;
+    }
+    else if (format == "xmq")
+    {
+        c->output_format = XMQ_CONTENT_XMQ;
     }
     else if (format == "fields")
     {
-        c->json = false;
         c->fields = true;
         c->separator = ';';
-    } else {
+    }
+    else
+    {
         warning("Unknown output format: \"%s\"\n", format.c_str());
     }
 }
@@ -753,7 +763,7 @@ shared_ptr<Configuration> loadConfiguration(string root, ConfigOverrides overrid
     Configuration *c = new Configuration;
 
     // JSon is default when configuring from config files.
-    c->json = true;
+    c->output_format = XMQ_CONTENT_JSON;
 
     vector<char> global_conf;
 

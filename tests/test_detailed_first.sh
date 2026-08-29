@@ -15,12 +15,35 @@ cat <<EOF > $TEST/test_expected.txt
   "_": "telegram",
   "id": "33225544",
   "max_flow_m3h": 0,
-  "max_flow_m3h_field": 1,
   "media": "water",
   "meter": "iperl",
   "name": "Gurka",
   "total_m3": 123.529,
-  "total_m3_field": 0
+  "details" : {
+    "telegram" : "1844AE4C4455223368077A55000000041389E20100023B0000",
+    "total_m3": {
+      "quantity": "Volume",
+      "unit": "m3",
+      "offset": 17,
+      "difvif": "0413",
+      "val": "89E20100",
+      "info": "Total volume of water measured."
+    },
+    "max_flow_m3h": {
+      "quantity": "Flow",
+      "unit": "m3h",
+      "offset": 23,
+      "difvif": "023B",
+      "val": "0000",
+      "info": "Max flow of water last week."
+    }
+    "total_l": {
+      "quantity": "Volume",
+      "unit": "l",
+      "calculated": "total_m3"
+      "info": "Total converted to litres."
+    }
+  }
 }
 EOF
 

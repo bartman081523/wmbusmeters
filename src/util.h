@@ -152,6 +152,8 @@ bool startsWith(const std::string &s, std::string &prefix);
 
 // Given alfa=beta it returns "alfa":"beta"
 std::string makeQuotedJson(const std::string &s);
+// Given alfa=beta extract alfa and beta
+void extractKeyValue(const std::string &s, std::string *key, std::string *val);
 
 std::string currentYear();
 std::string currentYearMonth();

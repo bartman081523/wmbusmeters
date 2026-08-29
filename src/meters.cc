@@ -23,6 +23,7 @@
 #include"meters.h"
 #include"meters_common_implementation.h"
 #include"units.h"
+#include"utils/doc.h"
 #include"wmbus.h"
 #include"wmbus_utils.h"
 
@@ -208,7 +209,7 @@ bool staticRegisterDriver(function<void(DriverInfo&)> setup)
     return true;
 }
 
-static XMQProceed collect_mvt_cb(XMQDoc *doc, XMQNodePtr node, vector<MVT> *mvts)
+static XMQProceed collect_mvt_cb(XMQDoc *doc, XMQNode *node, vector<MVT> *mvts)
 {
     string mvt_s = xmqGetStringRel(doc, ".", node);
     auto fields = splitString(mvt_s, ',');
@@ -232,7 +233,7 @@ static XMQProceed collect_mvt_cb(XMQDoc *doc, XMQNodePtr node, vector<MVT> *mvts
 
 struct RegisterCFFContext { vector<MVT> *mvts; };
 
-static XMQProceed register_compact_frame_format_cb(XMQDoc *doc, XMQNodePtr node, RegisterCFFContext *ctx)
+static XMQProceed register_compact_frame_format_cb(XMQDoc *doc, XMQNode *node, RegisterCFFContext *ctx)
 {
     const char *difvif_s = xmqGetStringRel(doc, ".", node);
     if (!difvif_s) return XMQ_CONTINUE;
@@ -1519,30 +1520,25 @@ string concatFields(Meter *m, Telegram *t, char c, vector<FieldInfo> &prints, bo
     return buf;
 }
 
-string MeterCommonImplementation::buildJSON(string id,
-                                            string media,
-                                            Telegram *t,
-                                            vector<FieldInfo> &prints,
-                                            vector<string> *extra_constant_fields,
-                                            bool pretty_print_json,
-                                            bool first)
+void MeterCommonImplementation::buildOutputDoc(XMQDoc *doc,
+                                               string id,
+                                               string media,
+                                               Telegram *t,
+                                               vector<FieldInfo> &prints,
+                                               vector<string> *extra_constant_fields,
+                                               bool first)
 {
-    string indent = "";
-    string newline = "";
+    XMQReturnNode rn = xmqAddRootElement(doc, "telegram", NS_NONE);
+    assert(rn.status == XMQ_OK);
+    XMQNode *telegram = rn.node;
 
-    if (pretty_print_json)
-    {
-        indent = "    ";
-        newline ="\n";
-    }
+    xmqAddKeyValue(doc, telegram, "media", media.c_str(), NS_PARENT);
+    xmqAddKeyValue(doc, telegram, "meter", driverName().str().c_str(), NS_PARENT);
+    xmqAddKeyValue(doc, telegram, "name", name().c_str(), NS_PARENT);
+    xmqAddKeyValueWithAttrs(doc, telegram, "id", id.c_str(), NS_PARENT,
+                            XMQ_ATTRS( {"S", "" }) ); // S means id will be a string in json, even though
+                                                      // it looks like a number.
 
-    string s;
-    s += "{"+newline;
-    s += indent+"\"_\":\"telegram\","+newline;
-    s += indent+"\"media\":\""+media+"\","+newline;
-    s += indent+"\"meter\":\""+driverName().str()+"\","+newline;
-    s += indent+"\"name\":\""+name()+"\","+newline;
-    s += indent+"\"id\":\""+id+"\","+newline;
 
     // Iterate over the meter field infos...
     map<FieldInfo*,set<DVEntry*>> founds; // Multiple dventries can match to a single field info.
@@ -1554,9 +1550,11 @@ string MeterCommonImplementation::buildJSON(string id,
         NumericField& nf = p.second;
         if (nf.field_info->printProperties().hasHIDE()) continue;
 
-        string out = nf.field_info->renderJson(this, &nf.dv_entry);
-        s += indent+out+","+newline;
+        bool add_details = true; //first && getDetailedFirst();
 
+        nf.field_info->insertNumericValuesIntoDoc(this, &nf.dv_entry, doc, telegram, add_details);
+
+/*
         if (first && getDetailedFirst())
         {
             size_t pos = out.find("\":");
@@ -1566,6 +1564,7 @@ string MeterCommonImplementation::buildJSON(string id,
                 s += indent+rule+","+newline;
             }
         }
+*/
     }
 
     for (auto &p : string_values_)
@@ -1582,23 +1581,23 @@ string MeterCommonImplementation::buildJSON(string id,
             {
                 in = joinStatusOKStrings(in, t->decoding_errors);
             }
-            out = tostrprintf("\"%s\":\"%s\"", vname.c_str(), in.c_str());
-            s += indent+out+","+newline;
+            xmqAddKeyValueWithAttrs(doc, telegram, vname.c_str(), in.c_str(), NS_PARENT,
+                                    XMQ_ATTRS( { "S", "" } )); // S marks this as a json string.
         }
         else
         {
             if (sf.value == "null")
             {
                 // The string "null" translates to actual json null.
-                out = tostrprintf("\"%s\":null", vname.c_str());
-                s += indent+out+","+newline;
+                xmqAddKeyValue(doc, telegram, vname.c_str(), "null", NS_PARENT);
             }
             else
             {
-                out = tostrprintf("\"%s\":\"%s\"", vname.c_str(), sf.value.c_str());
-                s += indent+out+","+newline;
+                xmqAddKeyValueWithAttrs(doc, telegram, vname.c_str(), sf.value.c_str(), NS_PARENT,
+                                        XMQ_ATTRS( { "S", "" } )); // S marks this as a json string.
             }
         }
+        /*
         if (first && getDetailedFirst())
         {
             size_t pos = out.find("\":");
@@ -1607,29 +1606,29 @@ string MeterCommonImplementation::buildJSON(string id,
                 string rule = out.substr(0, pos)+"_field\":"+to_string(sf.field_info->index());
                 s += indent+rule+","+newline;
             }
-        }
+            }*/
     }
-    s += indent+"\"timestamp\":\""+datetimeOfUpdateRobot()+"\"";
+    xmqAddKeyValue(doc, telegram, "timestamp", datetimeOfUpdateRobot().c_str(), NS_PARENT);
 
     if (t->about.device != "")
     {
-        s += ","+newline;
-        s += indent+"\"device\":\""+t->about.device+"\","+newline;
-        s += indent+"\"rssi_dbm\":"+to_string(t->about.rssi_dbm);
+        xmqAddKeyValue(doc, telegram, "device", t->about.device.c_str(), NS_PARENT);
+        xmqAddKeyValue(doc, telegram, "rssi_dbm", to_string(t->about.rssi_dbm).c_str(), NS_PARENT);
     }
     for (string extra_field : meterExtraConstantFields())
     {
-        s += ","+newline;
-        s += indent+makeQuotedJson(extra_field);
+        string k, v;
+        extractKeyValue(extra_field, &k, &v);
+        xmqAddKeyValueWithAttrs(doc, telegram, k.c_str(), v.c_str(), NS_PARENT,
+                                XMQ_ATTRS( { "S", "" } )); // S marks this as a json string.
     }
     for (string extra_field : *extra_constant_fields)
     {
-        s += ","+newline;
-        s += indent+makeQuotedJson(extra_field);
+        string k, v;
+        extractKeyValue(extra_field, &k, &v);
+        xmqAddKeyValueWithAttrs(doc, telegram, k.c_str(), v.c_str(), NS_PARENT,
+                                XMQ_ATTRS( { "S", "" } )); // S marks this as a json string.
     }
-    s += newline;
-    s += "}";
-    return s;
 }
 
 bool MeterCommonImplementation::handleTelegram(AboutTelegram &about, vector<uchar> input_frame,
@@ -2386,7 +2385,6 @@ bool FieldInfo::transformPayload(Telegram *t, vector<uchar> *content)
     return true;
 }
 
-
 string FieldInfo::renderJson(Meter *m, DVEntry *dve)
 {
     string s;
@@ -2443,6 +2441,62 @@ string FieldInfo::renderJson(Meter *m, DVEntry *dve)
     return s;
 }
 
+void FieldInfo::insertNumericValuesIntoDoc(Meter *m, DVEntry *dve, XMQDoc *doc, XMQNode *telegram, bool add_details)
+{
+    string display_unit_s = unitToStringLowerCase(displayUnit());
+    string field_name = generateFieldNameNoUnit(m, dve);
+
+    if (xuantity() == Quantity::Text)
+    {
+        string v = m->getStringValue(this);
+        if (v == "null")
+        {
+            // Yes, right now a meter cannot send a string value "something":"null" it will
+            // be translated into "something":null in the json, indicating that there is no value.
+            // This should not be a problem for now. Lets deal with it when a meter decides to send "null"
+            // as its version string for example.
+            xmqAddKeyValue(doc, telegram, field_name.c_str(), "null", NS_PARENT);
+        }
+        else
+        {
+            // Normally the string values are quoted in json. TODO quote the value properly.
+            // A well crafted meter could send a version string with " and break the json format.
+            xmqAddKeyValue(doc, telegram, field_name.c_str(), v.c_str(), NS_PARENT);
+        }
+    }
+    else
+    {
+        string key = field_name+"_"+display_unit_s;
+        string val = "";
+
+        if (displayUnit() == Unit::DateLT)
+        {
+            double t = m->getNumericValue(field_name, Unit::DateLT);
+            if (isnan(t)) val = "null";
+            else val = strdate(t);
+        }
+        else if (displayUnit() == Unit::DateTimeLT)
+        {
+            double t = m->getNumericValue(field_name, Unit::DateTimeLT);
+            if (isnan(t)) val = "null";
+            else val = strdatetime(t);
+        }
+        else if (displayUnit() == Unit::DateTimeUTC)
+        {
+            double t = m->getNumericValue(field_name, Unit::DateTimeUTC);
+            if (isnan(t)) val = "null";
+            else val = strTimestampUTC(t);
+        }
+        else
+        {
+            // All numeric values.
+            val = valueToString(m->getNumericValue(field_name, displayUnit()), displayUnit());
+        }
+        xmqAddKeyValue(doc, telegram, key.c_str(), val.c_str(), NS_PARENT);
+    }
+}
+
+
 void MeterCommonImplementation::createMeterEnv(string id,
                                                vector<string> *envs,
                                                vector<string> *extra_constant_fields)
@@ -2468,11 +2522,10 @@ void MeterCommonImplementation::printMeter(Telegram *t,
                                            string *human_readable,
                                            string *fields,
                                            char separator,
-                                           string *json,
                                            vector<string> *envs,
                                            vector<string> *extra_constant_fields,
                                            vector<string> *selected_fields,
-                                           bool pretty_print_json)
+                                           XMQDoc *doc)
 {
     bool first = !t->meter->hasReceivedFirstTelegram();
     string id = "";
@@ -2505,11 +2558,14 @@ void MeterCommonImplementation::printMeter(Telegram *t,
 
     *human_readable = concatFields(this, t, '\t', field_infos_, true, selected_fields, extra_constant_fields);
     *fields = concatFields(this, t, separator, field_infos_, false, selected_fields, extra_constant_fields);
-    *json = buildJSON(id, media, t, field_infos_, extra_constant_fields, pretty_print_json, first);
+
+    buildOutputDoc(doc, id, media, t, field_infos_, extra_constant_fields, first);
 
     createMeterEnv(id, envs, extra_constant_fields);
 
-    envs->push_back(string("METER_JSON=")+*json);
+    string json = docToString(doc, XMQ_CONTENT_JSON, false);
+
+    envs->push_back(string("METER_JSON=")+json);
     envs->push_back(string("METER_MEDIA=")+media);
     envs->push_back(string("METER_TIMESTAMP=")+datetimeOfUpdateRobot());
     envs->push_back(string("METER_TIMESTAMP_UTC=")+datetimeOfUpdateRobot());

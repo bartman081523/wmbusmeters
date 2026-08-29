@@ -179,21 +179,22 @@ protected:
     void createMeterEnv(std::string id,
                         std::vector<std::string> *envs,
                         std::vector<std::string> *more_json); // Add this json "key"="value" strings.
-    std::string buildJSON(std::string id,
-                          std::string media,
-                          Telegram *t,
-                          std::vector<FieldInfo> &prints,
-                          std::vector<std::string> *extra_constant_fields,
-                          bool pretty_print_json,
-                          bool first);
+    void buildOutputDoc(XMQDoc *doc,
+                        std::string id,
+                        std::string media,
+                        Telegram *t,
+                        std::vector<FieldInfo> &prints,
+                        std::vector<std::string> *extra_constant_fields,
+                        bool first);
     void printMeter(Telegram *t,
                     std::string *human_readable,
-                    std::string *fields, char separator,
-                    std::string *json,
+                    std::string *fields,
+                    char separator,
                     std::vector<std::string> *envs,
                     std::vector<std::string> *more_json, // Add this json "key"="value" strings.
                     std::vector<std::string> *selected_fields, // Only print these fields.
-                    bool pretty_print); // Insert newlines and indentation.
+                    XMQDoc *doc); // Write the content into this document.
+
     // Json fields include all values except timestamp_ut, timestamp_utc, timestamp_lt
     // since Json is assumed to be decoded by a program and the current timestamp which is the
     // same as timestamp_utc, can always be decoded/recoded into local time or a unix timestamp.

@@ -98,8 +98,9 @@ struct Configuration
     bool ignore_duplicate_telegrams = true; // Default is to ignore duplicates.
     bool detailed_first = false; // Print additional lines in telegram mapping back to driver field.
     std::string logfile;
-    bool json {};
-    bool pretty_print_json {};
+    XMQContentType output_format {};
+    bool pretty_print_output {};
+    bool colorize_output {};
     int  pollinterval {}; // Time between polling of mbus meters.
     IdentityMode identity_mode {}; // How to group meters identities into state objects.
     bool fields {};
