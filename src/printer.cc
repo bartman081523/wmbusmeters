@@ -24,11 +24,17 @@
 
 using namespace std;
 
-Printer::Printer(XMQContentType output_format, bool pretty_print, bool fields, char separator,
-                 bool use_meterfiles, string &meterfiles_dir,
-                 bool use_logfile, string &logfile,
+Printer::Printer(XMQContentType output_format,
+                 bool pretty_print,
+                 bool fields,
+                 char separator,
+                 bool use_meterfiles,
+                 string &meterfiles_dir,
+                 bool use_logfile,
+                 string &logfile,
                  vector<string> new_meter_shell_cmdlines,
-                 vector<string> shell_cmdlines, bool overwrite,
+                 vector<string> shell_cmdlines,
+                 bool overwrite,
                  MeterFileNaming naming,
                  MeterFileTimestamp timestamp)
 {
@@ -47,7 +53,8 @@ Printer::Printer(XMQContentType output_format, bool pretty_print, bool fields, c
     timestamp_ = timestamp;
 }
 
-void Printer::print(Telegram *t, Meter *meter,
+void Printer::print(Telegram *t,
+                    Meter *meter,
                     vector<string> *more_json,
                     vector<string> *selected_fields)
 {
@@ -61,7 +68,7 @@ void Printer::print(Telegram *t, Meter *meter,
 
     meter->printMeter(t, &human_readable, &fields, separator_, &envs, more_json, selected_fields, doc);
 
-    string output_string = docToString(doc, XMQ_CONTENT_JSON, false);
+    string output_string = docToString(doc, output_format_, pretty_print_);
 
     if (!meter->hasReceivedFirstTelegram())
     {

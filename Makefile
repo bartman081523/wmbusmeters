@@ -224,7 +224,8 @@ PROG_OBJS:=\
 	$(BUILD)/link_mode.o \
 	$(BUILD)/signal_handling.o \
 	$(BUILD)/slip.o \
-	$(BUILD)/fs.o
+	$(BUILD)/fs.o \
+	$(BUILD)/command_handler.o
 
 # If you run: "make DRIVER=minomess" then only driver_minomess.cc will be compiled into wmbusmeters.
 
