@@ -6,10 +6,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      CC: gcc-14
-      CXX: g++-14
-
     steps:
     - uses: actions/checkout@v7
     - id: INSTALL_ADDITIONAL_BUILD_DEPENDENCIES
