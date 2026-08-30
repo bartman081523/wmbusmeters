@@ -381,6 +381,21 @@ void handleTelegramDetails(Configuration *c, string value)
     }
 }
 
+void handleAddTelegramHex(Configuration *c, string value)
+{
+    if (value == "true")
+    {
+        c->add_telegram_hex = true;
+    }
+    else if (value == "false")
+    {
+        c->add_telegram_hex = false;
+    }
+    else {
+        warning("addtelegramhex should be either true or false, not \"%s\"\n", value.c_str());
+    }
+}
+
 void handleResetAfter(Configuration *c, string s)
 {
     if (s.length() >= 1)
@@ -812,6 +827,7 @@ shared_ptr<Configuration> loadConfiguration(string root, ConfigOverrides overrid
         else if (p.first == "basicauth") handleBasicAuth(c, p.second);
         else if (p.first == "ignoreduplicates") handleIgnoreDuplicateTelegrams(c, p.second);
         else if (p.first == "telegramdetails") handleTelegramDetails(c, p.second);
+        else if (p.first == "addtelegramhex") handleAddTelegramHex(c, p.second);
         else if (p.first == "device") handleDeviceOrHex(c, p.second);
         else if (p.first == "donotprobe") handleDoNotProbe(c, p.second);
         else if (p.first == "listento") handleListenTo(c, p.second);

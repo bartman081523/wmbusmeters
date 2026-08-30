@@ -4324,6 +4324,18 @@ TelegramDetails getTelegramDetails()
     return telegram_details_;
 }
 
+static bool add_telegram_hex_ = false;
+
+void setAddTelegramHex(bool b)
+{
+    add_telegram_hex_ = b;
+}
+
+bool getAddTelegramHex()
+{
+    return add_telegram_hex_;
+}
+
 bool BusDeviceCommonImplementation::handleTelegram(AboutTelegram &about, vector<uchar> frame)
 {
     bool handled = false;

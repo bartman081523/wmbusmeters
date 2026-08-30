@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2017-2023 Fredrik Öhrström (gpl-3.0-or-later)
+ Copyright (C) 2017-2026 Fredrik Öhrström (gpl-3.0-or-later)
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -1546,8 +1546,12 @@ void MeterCommonImplementation::buildOutputDoc(XMQDoc *doc,
         rn = xmqAddElement(doc, telegram, "details", NS_PARENT);
         details = rn.node;
 
+    }
+
+    if (getAddTelegramHex())
+    {
         string hex = bin2hex(t->frame);
-        xmqAddKeyValue(doc, details, "telegram", hex.c_str(), NS_PARENT);
+        xmqAddKeyValue(doc, telegram, "hex", hex.c_str(), NS_PARENT);
     }
 
     // Iterate over the meter field infos...
@@ -1593,16 +1597,13 @@ void MeterCommonImplementation::buildOutputDoc(XMQDoc *doc,
                                         XMQ_ATTRS( { "S", "" } )); // S marks this as a json string.
             }
         }
-        /*
-        if (first && getDetailedFirst())
+        if (details)
         {
-            size_t pos = out.find("\":");
-            if (pos != string::npos)
-            {
-                string rule = out.substr(0, pos)+"_field\":"+to_string(sf.field_info->index());
-                s += indent+rule+","+newline;
-            }
-            }*/
+            auto rn = xmqAddElement(doc, details, vname.c_str(), NS_PARENT);
+            XMQNode *info = rn.node;
+            xmqAddKeyValue(doc, info, "quantity", "Text", NS_PARENT);
+            xmqAddKeyValue(doc, info, "info", sf.field_info->help().c_str(), NS_PARENT);
+        }
     }
     xmqAddKeyValue(doc, telegram, "timestamp", datetimeOfUpdateRobot().c_str(), NS_PARENT);
 
@@ -2144,12 +2145,12 @@ void MeterCommonImplementation::setStringValue(FieldInfo *fi, string v, DVEntry 
     if (dve == NULL)
     {
         string field_name_no_unit = fi->vname();
-        string_values_[field_name_no_unit] = StringField(v, fi);
+        string_values_[field_name_no_unit] = StringField(v, fi, dve);
     }
     else
     {
         field_name_no_unit = fi->generateFieldNameNoUnit(this, dve);
-        string_values_[field_name_no_unit] = StringField(v, fi);
+        string_values_[field_name_no_unit] = StringField(v, fi, dve);
     }
 }
 
@@ -2444,6 +2445,7 @@ void FieldInfo::insertNumericValuesIntoDoc(Meter *m, DVEntry *dve, XMQDoc *doc, 
 
     if (xuantity() == Quantity::Text)
     {
+        // Should we even get here? A numerical value cannot be text right?
         string v = m->getStringValue(this);
         if (v == "null")
         {
@@ -2495,15 +2497,56 @@ void FieldInfo::insertNumericValuesIntoDoc(Meter *m, DVEntry *dve, XMQDoc *doc, 
             XMQNode *info = rn.node;
             xmqAddKeyValue(doc, info, "quantity", toString(xuantity()), NS_PARENT);
             xmqAddKeyValue(doc, info, "unit", display_unit_s.c_str(), NS_PARENT);
-            assert(dve);
-            string o = to_string(dve->offset);
-            xmqAddKeyValue(doc, info, "offset", o.c_str(), NS_PARENT);
-            xmqAddKeyValueWithAttrs(doc, info, "difvif", dve->dif_vif_key.str().c_str(), NS_PARENT, XMQ_ATTRS({"S",""}));
-            xmqAddKeyValueWithAttrs(doc, info, "val", dve->value.c_str(), NS_PARENT, XMQ_ATTRS({"S",""}));
+            xmqAddKeyValue(doc, info, "info", help().c_str(), NS_PARENT);
         }
     }
 }
 
+void FieldInfo::insertStringValuesIntoDoc(Meter *m, Telegram *t, DVEntry *dve, XMQDoc *doc, XMQNode *telegram, XMQNode *details)
+{
+    /*
+    string display_unit_s = unitToStringLowerCase(displayUnit());
+    string field_name = generateFieldNameNoUnit(m, dve);
+//    string val = m->getStringValue(field_name, displayUnit()), displayUnit());
+
+    if (printProperties().hasSTATUS())
+    {
+        string in = m->getStatusField(this);
+        if (t->decoding_errors != "")
+        {
+            in = joinStatusOKStrings(in, t->decoding_errors);
+        }
+        xmqAddKeyValueWithAttrs(doc, telegram, vname().c_str(), in.c_str(), NS_PARENT,
+                                XMQ_ATTRS( { "S", "" } )); // S marks this as a json string.
+    }
+    else
+    {
+        if (value() == "null")
+        {
+            // The string "null" translates to actual json null.
+            xmqAddKeyValue(doc, telegram, vname.c_str(), "null", NS_PARENT);
+        }
+        else
+        {
+            xmqAddKeyValueWithAttrs(doc, telegram, vname.c_str(), sf.value.c_str(), NS_PARENT,
+                                    XMQ_ATTRS( { "S", "" } )); // S marks this as a json string.
+        }
+    }
+    if (details)
+    {
+        auto rn = xmqAddElement(doc, details, vname.c_str(), NS_PARENT);
+        XMQNode *info = rn.node;
+        xmqAddKeyValue(doc, info, "quantity", toString(xuantity()), NS_PARENT);
+        xmqAddKeyValue(doc, info, "unit", display_unit_s.c_str(), NS_PARENT);
+        DVEntry *dve = &sf.dv_entry;
+        assert(dve);
+        string o = to_string(dve->offset);
+        xmqAddKeyValueWithAttrs(doc, info, "dv", dve->dif_vif_key.str().c_str(), NS_PARENT, XMQ_ATTRS({"S",""}));
+        xmqAddKeyValue(doc, info, "off", o.c_str(), NS_PARENT);
+        xmqAddKeyValueWithAttrs(doc, info, "hex", dve->value.c_str(), NS_PARENT, XMQ_ATTRS({"S",""}));
+    }
+    */
+}
 
 void MeterCommonImplementation::createMeterEnv(string id,
                                                vector<string> *envs,

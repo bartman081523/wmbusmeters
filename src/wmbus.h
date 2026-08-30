@@ -103,6 +103,8 @@ BusDeviceType toBusDeviceType(std::string &t);
 void setIgnoreDuplicateTelegrams(bool idt);
 void setTelegramDetails(TelegramDetails td);
 TelegramDetails getTelegramDetails();
+void setAddTelegramHex(bool b);
+bool getAddTelegramHex();
 
 // A specified bus device is supplied on the command line or in the config file.
 // It has this format "alias=file:type[id](extras):fq:bps:linkmods:CMD(command)"

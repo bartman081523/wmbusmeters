@@ -554,6 +554,29 @@ static shared_ptr<Configuration> parseNormalCommandLine(Configuration *c, int ar
             i++;
             continue;
         }
+        if (!strncmp(argv[i], "--addtelegramhex", 16)) {
+            if (argv[i][16] == 0)
+            {
+                c->add_telegram_hex = true;
+            }
+            else
+            {
+                if (!strcmp(argv[i]+16, "=true"))
+                {
+                    c->add_telegram_hex = true;
+                }
+                else if (!strcmp(argv[i]+16, "=false"))
+                {
+                    c->add_telegram_hex = false;
+                }
+                else
+                {
+                    error(EXIT_USAGE_ERROR, "You must specify true or false after --addtelegramhex=\n");
+                }
+            }
+            i++;
+            continue;
+        }
         if (!strncmp(argv[i], "--shell=", 8)) {
             string cmd = string(argv[i]+8);
             if (cmd == "") {

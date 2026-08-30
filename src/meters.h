@@ -339,6 +339,7 @@ struct FieldInfo
     std::string renderJson(Meter *m, DVEntry *dve);
     std::string renderJsonText(Meter *m, DVEntry *dve);
     void insertNumericValuesIntoDoc(Meter *m, DVEntry *dve, XMQDoc *doc, XMQNode *telegram, XMQNode *details);
+    void insertStringValuesIntoDoc(Meter *m, Telegram *t, DVEntry *dve, XMQDoc *doc, XMQNode *telegram, XMQNode *details);
     // Render the field name based on the actual field from the telegram.
     // A FieldInfo can be declared to handle any number of storage fields of a certain range.
     // The vname is then a pattern total_at_month_{storage_counter} that gets translated into
@@ -477,6 +478,7 @@ struct Meter
     virtual void setStringValue(std::string vname, std::string v, DVEntry *dve = NULL) = 0;
     virtual std::string getStringValue(FieldInfo *fi) = 0;
     virtual std::string decodeTPLStatusByte(uchar sts) = 0;
+    virtual std::string getStatusField(FieldInfo *fi) = 0;
 
     virtual void onUpdate(std::function<void(Telegram*t,Meter*)> cb) = 0;
     virtual int numUpdates() = 0;

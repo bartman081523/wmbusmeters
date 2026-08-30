@@ -586,6 +586,7 @@ bool start(Configuration *config)
     stderrEnabled(config->use_stderr_for_log);
     setAlarmShells(config->alarm_shells);
     setIgnoreDuplicateTelegrams(config->ignore_duplicate_telegrams);
+    setAddTelegramHex(config->add_telegram_hex);
     setTelegramDetails(config->telegram_details);
     if (config->new_meter_shells.size() > 0)
     {

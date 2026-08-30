@@ -52,9 +52,13 @@ struct StringField
 {
     std::string value;
     FieldInfo *field_info {};
+    DVEntry dv_entry {};
 
     StringField() {}
-    StringField(std::string v, FieldInfo *f) : value(v), field_info(f) {}
+    StringField(std::string v, FieldInfo *f, DVEntry *dve) : value(v), field_info(f)
+    {
+        if (dve) dv_entry = *dve;
+    }
 };
 
 struct MeterCommonImplementation : public Meter

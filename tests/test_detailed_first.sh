@@ -15,19 +15,14 @@ cat <<EOF > $TEST/test_expected.txt
   "_": "telegram",
   "details": {
     "max_flow_m3h": {
-      "difvif": "023B",
-      "offset": 23,
+      "info": "The maximum water flow recorded during previous period.",
       "quantity": "Flow",
-      "unit": "m3h",
-      "val": "0000"
+      "unit": "m3h"
     },
-    "telegram": "1844AE4C4455223368077A55000000041389E20100023B0000",
     "total_m3": {
-      "difvif": "0413",
-      "offset": 17,
+      "info": "The total water consumption.",
       "quantity": "Volume",
-      "unit": "m3",
-      "val": "89E20100"
+      "unit": "m3"
     }
   },
   "id": "33225544",

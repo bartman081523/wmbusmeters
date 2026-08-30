@@ -97,6 +97,7 @@ struct Configuration
     bool use_stderr_for_log = true; // Default is to use stderr for logging.
     bool ignore_duplicate_telegrams = true; // Default is to ignore duplicates.
     TelegramDetails telegram_details = TelegramDetails::NEVER;
+    bool add_telegram_hex = false; // Add hex=... with (decrypted) telegram hex data.
     std::string logfile;
     XMQContentType output_format {};
     bool pretty_print_output {};
