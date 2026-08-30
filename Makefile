@@ -142,7 +142,7 @@ endif
 $(info Building $(VERSION))
 
 FUZZFLAGS ?= -DFUZZING=false
-CXXFLAGS ?= $(EXTRA_CXXFLAGS) $(DEBUG_FLAGS) $(FUZZFLAGS) -fPIC -std=c++17 -Wall -Werror=format-security -Wno-unused-function
+CXXFLAGS ?= $(EXTRA_CXXFLAGS) $(DEBUG_FLAGS) $(FUZZFLAGS) -fPIC -Wall -Werror=format-security -Wno-unused-function
 
 # Inject default paths
 CXXFLAGS +=\
