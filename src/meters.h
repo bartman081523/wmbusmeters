@@ -370,6 +370,8 @@ struct FieldInfo
     void setNullValue(double nv) { has_null_value_ = true; null_value_ = nv; }
     bool hasNullValue() { return has_null_value_; }
     double nullValue() { return null_value_; }
+    void setChange(Change c) { change_ = c; }
+    Change getChange() { return change_; }
     void setTPLAESCBCIVPayloadTransform(int payload_offset, int payload_length, int tpl_acc_offset)
     {
         has_tpl_aes_cbc_iv_payload_transform_ = true;
@@ -384,6 +386,7 @@ private:
     int index_; // The field infos for a meter are ordered.
     std::string vname_; // Value name, like: total current previous target, ie no unit suffix.
     Quantity xuantity_; // Quantity: Energy, Volume
+    Change  change_ {}; // Instant, Net, Increasing defaults to Instant.
     Unit display_unit_; // Selected display unit for above quantity: KWH, M3
     VifScaling vif_scaling_;
     DifSignedness dif_signedness_;

@@ -619,6 +619,7 @@ void MeterCommonImplementation::markLastFieldAsLibrary()
     num_driver_fields_--;
 }
 
+
 FieldInfo *MeterCommonImplementation::lastAddedField()
 {
     return &field_infos_.back();
@@ -2497,6 +2498,7 @@ void FieldInfo::insertNumericValuesIntoDoc(Meter *m, DVEntry *dve, XMQDoc *doc, 
             XMQNode *info = rn.node;
             xmqAddKeyValue(doc, info, "quantity", toString(xuantity()), NS_PARENT);
             xmqAddKeyValue(doc, info, "unit", display_unit_s.c_str(), NS_PARENT);
+            xmqAddKeyValue(doc, info, "change", toString(getChange()), NS_PARENT);
             xmqAddKeyValue(doc, info, "info", help().c_str(), NS_PARENT);
         }
     }
@@ -3655,6 +3657,7 @@ bool MeterCommonImplementation::addOptionalLibraryFields(string field_names)
             .set(MeasurementType::Instantaneous)
             .set(VIFRange::Volume)
             );
+        lastAddedField()->setChange(Change::Increasing);
         markLastFieldAsLibrary();
     }
 
@@ -3688,6 +3691,7 @@ bool MeterCommonImplementation::addOptionalLibraryFields(string field_names)
             .set(MeasurementType::Instantaneous)
             .set(VIFRange::AnyEnergyVIF)
             );
+        lastAddedField()->setChange(Change::Increasing);
         markLastFieldAsLibrary();
     }
 
@@ -3740,6 +3744,7 @@ bool MeterCommonImplementation::addOptionalLibraryFields(string field_names)
             .set(VIFRange::Volume)
             .add(VIFCombinable::ForwardFlow)
             );
+        lastAddedField()->setChange(Change::Increasing);
         markLastFieldAsLibrary();
     }
 
@@ -3757,6 +3762,7 @@ bool MeterCommonImplementation::addOptionalLibraryFields(string field_names)
             .set(VIFRange::Volume)
             .add(VIFCombinable::BackwardFlow)
             );
+        lastAddedField()->setChange(Change::Increasing);
         markLastFieldAsLibrary();
     }
 
@@ -3869,6 +3875,7 @@ bool MeterCommonImplementation::addOptionalLibraryFields(string field_names)
             .set(MeasurementType::Instantaneous)
             .set(VIFRange::HeatCostAllocation)
             );
+        lastAddedField()->setChange(Change::Increasing);
         markLastFieldAsLibrary();
     }
 

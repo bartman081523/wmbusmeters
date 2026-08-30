@@ -14,6 +14,7 @@ driver {
         field {
             name     = total
             quantity = Volume
+            change   = Increasing
             info     = 'The total water consumption.'
             match {
                 measurement_type = Instantaneous
@@ -23,6 +24,7 @@ driver {
         field {
             name     = max_flow
             quantity = Flow
+            change   = Instant
             info     = 'The maximum water flow recorded during previous period.'
             match {
                 measurement_type = Instantaneous

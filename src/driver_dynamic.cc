@@ -46,6 +46,7 @@ bool check_field_match_entire_frame(const char *mef, DriverDynamic *dd);
 string check_field_info(const char *info, DriverDynamic *dd);
 ReadableString check_field_readable_string(const char *rs_s, DriverDynamic *dd);
 Quantity check_field_quantity(const char *quantity_s, DriverDynamic *dd);
+Change check_field_change(const char *change_s, DriverDynamic *dd);
 VifScaling check_vif_scaling(const char *vif_scaling_s, DriverDynamic *dd);
 DifSignedness check_dif_signedness(const char *dif_signedness_s, DriverDynamic *dd);
 PrintProperties check_print_properties(const char *print_properties_s, DriverDynamic *dd);
@@ -343,6 +344,10 @@ XMQProceed DriverDynamic::add_field(XMQDoc *doc, XMQNode *field, DriverDynamic *
     // The quantity ie Volume, gives the default unit (m3) for the field. The unit can be overriden with display_unit.
     Quantity quantity = check_field_quantity(xmqGetStringRel(doc, "quantity", field), dd);
 
+    // The change is instant, cumulative or increasing. This setting provides extra knowledge about the field
+    // which cannot be deduced from the difvif keys.
+    Change change = check_field_change(xmqGetStringRel(doc, "change", field), dd);
+
     // Text fields are either version strings or lookups from status bits.
     // All other fields are numeric, ie they have a unit. This also includes date and datetime.
     bool is_numeric = quantity != Quantity::Text;
@@ -536,6 +541,7 @@ XMQProceed DriverDynamic::add_field(XMQDoc *doc, XMQNode *field, DriverDynamic *
                     );
             }
         }
+        dd->lastAddedField()->setChange(change);
     }
     else
     {
@@ -990,6 +996,32 @@ Quantity check_field_quantity(const char *quantity_s, DriverDynamic *dd)
     }
 
     return quantity;
+}
+
+Change check_field_change(const char *change_s, DriverDynamic *dd)
+{
+    if (!change_s)
+    {
+        // It is permitted not to have a change setting for backwards compatibility reasons.
+        return Change::Instant;
+    }
+
+    Change change = toChange(change_s);
+
+    if (change == Change::Unknown)
+    {
+        warning("(driver) error in %s, bad change: %s\n"
+                "%s\n"
+                "Available change:\n"
+                "Instant    (Sample of the current value, eg temperature or power.)\n"
+                "Net        (Net balance of imported/exported energy.)\n"
+                "Increasing (Total water consumption always increasing unless reset.\n",
+                dd->fileName().c_str(),
+                change_s);
+        throw 1;
+    }
+
+    return change;
 }
 
 ReadableString check_field_readable_string(const char *rs_s, DriverDynamic *dd)
