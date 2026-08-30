@@ -1469,7 +1469,7 @@ struct OffsetEntries {
 };
 typedef OffsetEntries OffsetEntries;
 
-XMQProceed add_value(XMQDoc *doc, XMQNodePtr node, void *user_data)
+XMQProceed add_value(XMQDoc *doc, XMQNode *node, void *user_data)
 {
     OffsetEntries *oe = (OffsetEntries*)user_data;
     Telegram *t = oe->telegram;
@@ -1502,9 +1502,9 @@ XMQProceed add_value(XMQDoc *doc, XMQNodePtr node, void *user_data)
     return XMQ_CONTINUE;
 }
 
-XMQProceed update_offset(XMQDoc *doc, XMQNodePtr node, void *user_data)
+XMQProceed update_offset(XMQDoc *doc, XMQNode *node, void *user_data)
 {
-    XMQNodePtr o = xmqGetNodeRel(doc, "@off", node);
+    XMQNode *o = xmqGetNodeRel(doc, "@off", node);
     const char *c = xmqGetContent(o);
     fprintf(stderr, "UPDATTO %s\n", c);
     xmqSetContent(o, c);

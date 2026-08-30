@@ -395,3 +395,32 @@ To reproduce CI locally: `./configure && make && make test` plus `cd drivers && 
 - `jq` — required by `test.sh`
 - `librtlsdr`, `libusb`, `libxml2`, `libxslt` — required by `./configure`
 - C++17 compiler (g++ or clang++)
+
+## Writing pull requests
+
+A pull request description should be short and concise.
+
+A decrypted telegram hex should always be part of the pull request.
+(Unless the PR is completely unrelated to decoding telegrams.)
+
+The decrypted telegram should demonstrate what the problem is, which can be: value that is not extracted at all,
+extracted value is wrong, missing decoding of status bits, failing to understand OMS standard, etc.
+
+Your new code should be testable with a new test case in an xmq file, or a new test case under the tests directory.
+
+You do not need to write a test plan if it only concerns normal build steps.
+But do write how you verified/tested the changes of wmbusmeters in respect to you real world meters.
+
+There is no point in adding empty drivers when you lack a decrypted telegram.
+
+## Writing issues
+
+An issue should short and concise. A decrypted telegram hex should always be part of the issue
+(Unless the issue is completely unrelated to decoding telegrams.)
+
+The decrypted telegram should demonstrate what the problem is, which can be: value that is not extracted at all,
+extracted value is wrong, missing decoding of status bits, failing to understand OMS standard, etc.
+
+Also very brielfy describe the setup you are using, HA-addon, standalone docker, packaged version (deb/rpm/snap).
+
+Provide the wmbusmeters version.

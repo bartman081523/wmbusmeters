@@ -4,7 +4,7 @@ driver {
     meter_type     = WaterMeter
     default_fields = name,id,total_m3,max_flow_m3h,timestamp
     manufacturer   = Sensus
-    model          = iperl
+    model          = 'Sensus iPERL'
     detect {
         mvt = SEN,68,06
         mvt = SEN,68,07
@@ -14,6 +14,7 @@ driver {
         field {
             name     = total
             quantity = Volume
+            change   = Increasing
             info     = 'The total water consumption.'
             match {
                 measurement_type = Instantaneous
@@ -23,6 +24,7 @@ driver {
         field {
             name     = max_flow
             quantity = Flow
+            change   = Instant
             info     = 'The maximum water flow recorded during previous period.'
             match {
                 measurement_type = Instantaneous

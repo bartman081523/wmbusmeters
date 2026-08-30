@@ -56,6 +56,7 @@ driver {
         field {
             name           = total
             quantity       = Volume
+            change         = Increasing
             info           = 'The total water consumption recorded by this meter.'
             vif_scaling    = Auto
             dif_signedness = Signed
