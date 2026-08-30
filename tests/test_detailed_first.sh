@@ -15,11 +15,13 @@ cat <<EOF > $TEST/test_expected.txt
   "_": "telegram",
   "details": {
     "max_flow_m3h": {
+      "change": "Instant",
       "info": "The maximum water flow recorded during previous period.",
       "quantity": "Flow",
       "unit": "m3h"
     },
     "total_m3": {
+      "change": "Increasing",
       "info": "The total water consumption.",
       "quantity": "Volume",
       "unit": "m3"
