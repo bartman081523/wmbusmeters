@@ -1016,6 +1016,12 @@ test {
     fields   = 'MoreWater;12345699;7.704;0;1111-11-11 11:11.11'
 }
 test {
+    args     = 'NoHeatYet istaheat 54900708 NOKEY'
+    telegram = 5344742608079054A90C8C20A3900F002C2509530000307906D95D07027E7A09003007102F2F_0C0E00000000426C3F3C4C0E0000000082016C5F378C010E000000008C0115000000002F2F2F2F2F2F2F2F2F2F2F
+    json     = '{"_":"telegram","media":"heat volume at inlet","meter":"istaheat",name":"NoHeatYet","id":"54900708","last_year_kwh":0,"last_year_date":"2025-12-31","target_kwh":0,"target_m3":0,"target_date":"2026-07-31","total_kwh":0,"status":"OK","timestamp":"1111-11-11T11:11:11Z"}'
+    fields   = 'NoHeatYet;54900708;OK;0;0;1111-11-11 11:11.11'
+}
+test {
     args     = 'FeelTheHeat istaheat 44503169 NOKEY'
     telegram = 5344742669315044A9048C2017900F002C253DCD0000CE827C98B4346AB67A3D003007102F2F_0C0514980400426CFF2C4C052061020082016C1F318C0105581604008C0115142800002F2F2F2F2F2F2F2F2F2F2F
     json     = '{"_":"telegram","status":"OK","media":"heat","meter":"istaheat","name":"FeelTheHeat","id":"44503169","last_year_kwh":2612,"last_year_date":"2023-12-31","target_kwh":4165.8,"target_date":"2024-01-31","target_m3":281.4,"total_kwh":4981.4,"timestamp":"1111-11-11T11:11:11Z"}'
@@ -1026,6 +1032,12 @@ test {
     telegram = 5344742669315033A9048C2070900F002C25961200009D6949E80EB1E2707A96003007102F2F_0C0500000000426C00004C050000000082016CFE298C0105000000008C0115000000002F2F2F2F2F2F2F2F2F2F2F
     json     = '{"_":"telegram","id": "33503169","last_year_date": "1999-11-30","last_year_kwh": 0,"media": "heat","meter": "istaheat","name": "HeatItUp","status": "OK","target_date": "2023-09-30","target_kwh": 0,"target_m3": 0,"timestamp": "1111-11-11T11:11:11Z","total_kwh": 0}'
     fields   = 'HeatItUp;33503169;OK;0;0;1111-11-11 11:11.11'
+}
+test {
+    args     = 'WaterIsCold istawater 50104916 NOKEY'
+    telegram = 434474261649105033078C208F900F002C258B0B000008383D83832E14A47A8B002007102F2F_0C139166000082016C5F318C011321540000C20F6C4932EA0F3A00002F2F
+    json     = '{"_": "telegram","id": "50104916","media": "water","meter": "istawater","name": "WaterIsCold","target_date": "2026-01-31","target_m3": 5.421,"timestamp": "1111-11-11T11:11:11Z","total_m3": 6.691}'
+    fields   = 'WaterIsCold;50104916;6.691;5.421;1111-11-11 11:11.11'
 }
 test {
     args     = 'I istawater 22705729 NOKEY'
@@ -1835,6 +1847,13 @@ test {
     fields   = 'Heat;70835484;9205;5182;1111-11-11 11:11.11'
 }
 test {
+    args     = 'HeatEnc55 qheatv2 67918447 NOKEY'
+    comment  = 'Real encrypted Q heat 5.5 walk-by block (header byte[4]=0x35, from issue #1588) without a configured key: the grammar must fail closed and must not invent total_*/target_*/energy_delta_* values from the ciphertext. Only the trailing 046D meter_datetime record is real. See issues #1588/#2025.'
+    telegram = 58449344478491673C377807794784916793443C040DFF5F350082B40035F4E5CF5874D4A45106F8435DDA926DE66FE62E8ECCB25B199CCAE33C6B679AD69AC8629398ECDCB1DDB263EDA12137EA02FD170000046D080F4333
+    json     = '{"_": "telegram","enhanced_id": "043C449367918447","id": "67918447","media": "radio converter (meter side)","meter": "qheatv2","meter_datetime": "2026-03-03 15:08","name": "HeatEnc55","status": "OK","timestamp": "1111-11-11T11:11:11Z"}'
+    fields   = 'HeatEnc55;67918447;OK;null;1111-11-11 11:11.11'
+}
+test {
     args     = 'QQB qheatv2 67985890 NOKEY'
     telegram = 41449344905898673e37729058986793443e04120000200c06809300004c0678820000426c3f3ccc080636900000c2086c5f3102fd170000326cffff046d1d095832
     json     = '{"_": "telegram","device_error_date":null,"id": "67985890","media": "heat","meter": "qheatv2","meter_datetime": "2026-02-24 09:29","name": "QQB","status": "OK","target_date": "2026-01-31","target_kwh": 9036,"target_year_date": "2025-12-31","target_year_kwh": 8278,"timestamp": "1111-11-11T11:11:11Z","total_kwh": 9380}'
@@ -1902,6 +1921,20 @@ test {
     telegram = 76440907086401030B0d7a78000000046d030fB726346d0000010134fd170000000004200f13cf0104240f13cf0104863B0000000004863cdc0000000413B5150600042B86f1ffff043B030200000259c002025d2c05026194fd0c780864010384086d3B17Bf258408863B000000008408863c0B000000
     json     = '{"_":"telegram","media":"heat/cooling load","meter":"qualcosonic","name":"qualco","id":"03016408","fabrication_no":"03016408","operating_time_h":8430.013056,"on_time_h":8430.013056,"meter_datetime":"2021-06-23 15:03","meter_datetime_at_error":"2000-01-01 00:00","total_m3":398.773,"flow_temperature_c":7.04,"return_temperature_c":13.24,"flow_return_temperature_difference_c":-6.2,"volume_flow_m3h":0.515,"status":"OK","total_heat_energy_kwh":0,"total_cooling_energy_kwh":220,"power_kw":-3.706,"target_datetime":"2021-05-31 23:59","target_heat_energy_kwh":0,"target_cooling_energy_kwh":11,"timestamp":"1111-11-11T11:11:11Z"}'
     fields   = 'qualco;03016408;OK;0;220;-3.706;2021-05-31 23:59;0;11;1111-11-11 11:11.11'
+}
+test {
+    args     = 'Kaltwasser qwaterv2 14356101 NOKEY'
+    comment  = 'Q Water 5.5 walk-by block with an unsupported layout: no 13FFFF volume marker after the 9-byte header. The ixml grammar must fail closed and must not invent total_m3/target_*/volume_delta_* values from a block it cannot decode. Only the trailing 046D meter_datetime record is real. See issue #1916.'
+    telegram = 49449344016135141907780DFF5F350082C100352CAA738213487EAF84ED6BFD4DA668870285651771A8D3CFB7DE5ECC22081CDD1A3FFBA6506F901027DB29B4672708D9046D160A4F38
+    json     = '{"_": "telegram","id": "14356101","media": "water","meter": "qwaterv2","meter_datetime": "2026-08-15 10:22","name": "Kaltwasser","status": "OK","timestamp": "1111-11-11T11:11:11Z"}'
+    fields   = 'Kaltwasser;14356101;OK;null;1111-11-11 11:11.11'
+}
+test {
+    args     = 'AESTest qwaterv2 14356101 000102030405060708090A0B0C0D0E0F'
+    comment  = 'Encrypted Q walk-by block (header byte[4]=0x35). AES-128-CBC EN 13757-7 Mode 5 with the configured key, Mode-5 IV (M-field+A-field+ACC*8, ACC=header byte[2]). The body decrypts to the legacy plaintext layout and is parsed by the unchanged ixml grammar. The telegram and key are synthetic (not real Qundis material) so the test is self-contained. See issue #1916/#2025.'
+    telegram = 49449344016135141907780DFF5F350082C100353E44AAFEDB237BDBA569404984A09F6DD12E32C2F03DD335E259DD446711256309CC4E894B4C7D8CC427C7491B94FF05046D160A4F38
+    json     = '{"_": "telegram","id": "14356101","media": "water","meter": "qwaterv2","meter_datetime": "2026-08-15 10:22","name": "AESTest","status": "OK","target_date":null,"target_m3": 0.03,"target_year_date":null,"target_year_m3": 0.02,"timestamp": "1111-11-11T11:11:11Z","total_m3": 0.01,"volume_delta_10_m3": 0.009,"volume_delta_11_m3": 0.01,"volume_delta_12_m3": 0.011,"volume_delta_13_m3": 0.012,"volume_delta_2_m3": 0.001,"volume_delta_3_m3": 0.002,"volume_delta_4_m3": 0.003,"volume_delta_5_m3": 0.004,"volume_delta_6_m3": 0.005,"volume_delta_7_m3": 0.006,"volume_delta_8_m3": 0.007,"volume_delta_9_m3": 0.008}'
+    fields   = 'AESTest;14356101;OK;0.01;1111-11-11 11:11.11'
 }
 test {
     args     = 'QQ5 qwater 61193115 NOKEY'
