@@ -428,6 +428,7 @@ driver {
         field {
             name     = total_energy_consumption
             quantity = Energy
+            change   = Increasing
             info     = 'The total energy consumption recorded by this meter.'
             match {
                 measurement_type = Instantaneous
@@ -437,6 +438,7 @@ driver {
         field {
             name     = total_energy_backward
             quantity = Energy
+            change   = Increasing
             info     = 'The total backwards energy consumption recorded by this meter.'
             match {
                 measurement_type = Instantaneous
@@ -447,6 +449,7 @@ driver {
         field {
             name     = total_volume
             quantity = Volume
+            change   = Increasing
             info     = 'The volume of water (3/68/Volume V1).'
             match {
                 measurement_type = Instantaneous
@@ -456,6 +459,7 @@ driver {
         field {
             name     = 'total_volume_subunit{subunit_counter}'
             quantity = Volume
+            change   = Increasing
             info     = 'The volume of water for a subunit.'
             match {
                 measurement_type = Instantaneous

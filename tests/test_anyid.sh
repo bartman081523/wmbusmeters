@@ -70,6 +70,7 @@ then
         TESTRESULT="OK"
     else
         TESTRESULT="ERROR"
+        meld $TEST/test_expected.txt $TEST/test_responses.txt
     fi
 fi
 

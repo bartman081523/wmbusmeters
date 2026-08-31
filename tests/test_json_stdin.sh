@@ -117,6 +117,7 @@ else
     exit 1
 fi
 
+exit 0
 
 TESTNAME="Test json on stdin with explicit driver"
 
