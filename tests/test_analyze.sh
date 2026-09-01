@@ -53,7 +53,7 @@ Using driver   : kamwater 00/00
 {
     "_": "telegram",
     "media": "cold water",
-    "meter": "kamwater",
+    "driver": "kamwater",
     "name": "",
     "id": "76348799",
     "timestamp": "1111-11-11T11:11:11Z"
@@ -91,7 +91,7 @@ Using driver   : kamwater 00/00
 {
     "_": "telegram",
     "media": "cold water",
-    "meter": "kamwater",
+    "driver": "kamwater",
     "name": "",
     "id": "76348799",
     "timestamp": "1111-11-11T11:11:11Z"
@@ -129,7 +129,7 @@ Using driver   : kamwater 00/00
 {
     "_": "telegram",
     "media": "cold water",
-    "meter": "kamwater",
+    "driver": "kamwater",
     "name": "",
     "id": "76348799",
     "timestamp": "1111-11-11T11:11:11Z"
@@ -183,7 +183,7 @@ Using driver   : kamwater 00/00
 {
     "_": "telegram",
     "media": "cold water",
-    "meter": "kamwater",
+    "driver": "kamwater",
     "name": "",
     "id": "76348799",
     "flow_temperature_c": 127,
@@ -238,7 +238,7 @@ Using driver   : kamwater 00/00
 {
     "_": "telegram",
     "media": "cold water",
-    "meter": "kamwater",
+    "driver": "kamwater",
     "name": "",
     "id": "76348799",
     "flow_temperature_c": 127,

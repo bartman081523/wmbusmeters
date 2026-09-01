@@ -15,7 +15,7 @@ cat <<EOF | jq --sort-keys . > $TEST/test_expected.txt
 {
   "_": "telegram",
   "media": "heat",
-  "meter": "kamheat",
+  "driver": "kamheat",
   "name": "Foo",
   "id": "82790501",
   "details": {

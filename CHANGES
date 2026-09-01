@@ -1,4 +1,9 @@
 
+ATTENTION! Breaking change the field "meter":"kamwater" is now renamed to
+"driver":"kamwater". The meter field name is just confusing since it has not been
+correlated to the meter type since 2019. Hopefully very few users actually
+make use of this field.
+
 Added --telegramdetails=[never|first||always]
 this option will in the json add details about the quantity, unit and info(help) information
 for each field. This will be used to automatically generate the discovery messages
