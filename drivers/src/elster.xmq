@@ -7,18 +7,8 @@ driver {
         mvt = ELS,81,03
     }
     library {
+        use = total_m3
         use = actuality_duration_s
-    }
-    fields {
-        field {
-            name     = total
-            quantity = Volume
-            info     = 'The total water consumption.'
-            match {
-                measurement_type = Instantaneous
-                vif_range        = Volume
-            }
-        }
     }
     tests {
         test {
