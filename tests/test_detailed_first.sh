@@ -27,10 +27,10 @@ cat <<EOF > $TEST/test_expected.txt
       "unit": "m3"
     }
   },
+  "driver": "iperl",
   "id": "33225544",
   "max_flow_m3h": 0,
   "media": "water",
-  "meter": "iperl",
   "name": "Gurka",
   "total_m3": 123.529
 }
