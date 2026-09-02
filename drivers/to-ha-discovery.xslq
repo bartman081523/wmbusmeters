@@ -102,6 +102,9 @@ xsl:stylesheet(version                 = 1.0
                         xsl:when(test = "$metertype = 'WaterMeter' and $deviceclass = 'volume'") {
                             xsl:text = water
                         }
+                        xsl:when(test = "$metertype = 'GasMeter' and $deviceclass = 'volume'") {
+                            xsl:text = gas
+                        }
                         xsl:otherwise {
                             xsl:value-of(select = $deviceclass)
                         }
